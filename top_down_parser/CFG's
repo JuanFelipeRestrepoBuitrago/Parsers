@@ -1,0 +1,31 @@
+Gramática Paréntesis Balanceados
+S -> (S)S'|()S'
+S' -> SS'|ε
+------------------
+Trabaja Mejor
+S -> (S)S'|()S'
+S' -> (S)S'S'|()S'S'|ε
+------------------
+S -> (S)|SS|ε
+------------------
+S -> (S)|SS|()
+
+Gramática N
+E -> TE'
+E' -> +TE'|ε
+T -> FT'
+T' -> *FT'|ε
+F -> (E)|i
+
+Gramática Evelyn
+E -> (A)
+A -> CB
+B -> ;A|ε
+C -> x|E
+-------------------------
+E -> yGH
+H -> xH|ε
+G -> A|B
+A -> ε
+V -> A|bA
+B -> bV
