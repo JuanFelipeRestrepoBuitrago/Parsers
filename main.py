@@ -7,9 +7,9 @@ def top_down_parser():
     # tests_t_d.test_first()
     # tests_t_d.test_follow()
     # tests_t_d.test_check_ll1()
-    tests_t_d.test_table()
+    # tests_t_d.test_table()
     # tests_t_d.test_parser()
-    # tests_t_d.final_test()
+    tests_t_d.final_test()
 
 
 def bottom_up_parser():
@@ -23,5 +23,5 @@ def bottom_up_parser():
 
 
 if __name__ == "__main__":
-    top_down_parser()
-    # bottom_up_parser()
+    # top_down_parser()
+    bottom_up_parser()

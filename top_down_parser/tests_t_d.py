@@ -1,7 +1,7 @@
 import time
 
 from grammar import Grammar
-from top_down_parser.parser import Parser
+from top_down_parser.top_down_parser import TopDownParser
 
 
 # Test a grammar example, which we did in class
@@ -39,7 +39,7 @@ def test_first():
     grammar.receive_production("F->(E)|i")
     grammar.set_start("E")
     # Create a parser for the grammar
-    parser = Parser(grammar)
+    parser = TopDownParser(grammar)
     # Print the first of the start symbol in this case should be {i, (}
     print(parser.first("E"))
     # Print the first of the string +TE' in this case should be {+}
@@ -52,7 +52,7 @@ def test_first():
     grammar_2.receive_production("S -> (S)S'|()S'")
     grammar_2.receive_production("S' -> SS'|ε")
     grammar_2.set_start("S")
-    parser_2 = Parser(grammar_2)
+    parser_2 = TopDownParser(grammar_2)
     # Print the first of the start symbol in this case should be {(}
     print(parser_2.first("S"))
     # Print the first of the string ()S' in this case should be {(, ε}
@@ -63,7 +63,7 @@ def test_first():
     grammar_3.receive_production("S -> (S)S'|S'")
     grammar_3.receive_production("S' -> SS'|ε")
     grammar_3.set_start("S")
-    parser_3 = Parser(grammar_3)
+    parser_3 = TopDownParser(grammar_3)
     # Print the first of the start symbol in this case should be {(, ε}
     print(parser_3.first("S"))
     # Print the first of the string ()S' in this case should be {(, ε}
@@ -81,7 +81,7 @@ def test_follow():
     grammar.receive_production("F->(E)|i")
     grammar.set_start("E")
     # Create a parser for the grammar
-    parser = Parser(grammar)
+    parser = TopDownParser(grammar)
     # Print the follow of the start symbol in this case should be {$, )} (the order is not important)
     print(f'Follow of {grammar.start}: {parser.follow(grammar.start)}')
     # Print the follow of the non-terminal E' in this case should be {$, )} (the order is not important)
@@ -98,7 +98,7 @@ def test_follow():
     grammar_2.receive_production("S' -> SS'|ε")
     grammar_2.receive_production("S -> (S)S'|()S'")
     grammar_2.set_start("S")
-    parser_2 = Parser(grammar_2)
+    parser_2 = TopDownParser(grammar_2)
     # Print the follow of the start symbol in this case should be {$, (, )} (the order is not important)
     print(f'Follow of S: {parser_2.follow("S")}')
     # Print the follow of the non-terminal S' in this case should be {$, (, )} (the order is not important)
@@ -111,7 +111,7 @@ def test_follow():
     grammar_3.receive_production("B -> ;A|ε")
     grammar_3.receive_production("C -> x|E")
     grammar_3.set_start("E")
-    parser_3 = Parser(grammar_3)
+    parser_3 = TopDownParser(grammar_3)
     # Print the follow of the start symbol in this case should be {$, ;, )} (the order is not important)
     print(f'Follow of E: {parser_3.follow("E")}')
     # Print the follow of the non-terminal A in this case should be {)} (the order is not important)
@@ -130,7 +130,7 @@ def test_follow():
     grammar_4.receive_production("V -> A|bA")
     grammar_4.receive_production("B -> bV")
     grammar_4.set_start("E")
-    parser_4 = Parser(grammar_4)
+    parser_4 = TopDownParser(grammar_4)
     # Print the follow of the start symbol in this case should be {$} (the order is not important)
     print(f'Follow of E: {parser_4.follow("E")}')
     # Print the follow of the non-terminal H in this case should be {$} (the order is not important)
@@ -150,7 +150,7 @@ def test_follow():
     grammar_5.receive_production("B -> bC")
     grammar_5.receive_production("C -> cS|ε")
     grammar_5.set_start("S")
-    parser_5 = Parser(grammar_5)
+    parser_5 = TopDownParser(grammar_5)
     # Print the follow of the start symbol in this case should be {$} (the order is not important)
     print(f'Follow of S: {parser_5.follow("S")}')
     # Print the follow of the non-terminal B in this case should be {$} (the order is not important)
@@ -170,7 +170,7 @@ def test_check_ll1():
     grammar.receive_production("F->(E)|i")
     grammar.set_start("E")
     # Create a parser for the grammar
-    parser = Parser(grammar)
+    parser = TopDownParser(grammar)
     # Check if the grammar is LL(1), in this case should be True
     print(f'The grammar\n{grammar}\nIs LL(1): {parser.is_ll1()}')
     print()
@@ -179,7 +179,7 @@ def test_check_ll1():
     grammar_2.receive_production("S' -> SS'|ε")
     grammar_2.receive_production("S -> (S)S'|()S'")
     grammar_2.set_start("S")
-    parser_2 = Parser(grammar_2)
+    parser_2 = TopDownParser(grammar_2)
     # Check if the grammar is LL(1), in this case should be False
     print(f'The grammar\n{grammar_2}\nIs LL(1): {parser_2.is_ll1()}')
     print()
@@ -190,7 +190,7 @@ def test_check_ll1():
     grammar_3.receive_production("B -> ;A|ε")
     grammar_3.receive_production("C -> x|E")
     grammar_3.set_start("E")
-    parser_3 = Parser(grammar_3)
+    parser_3 = TopDownParser(grammar_3)
     # Check if the grammar is LL(1), in this case should be True
     print(f'The grammar\n{grammar_3}\nIs LL(1): {parser_3.is_ll1()}')
     print()
@@ -203,7 +203,7 @@ def test_check_ll1():
     grammar_4.receive_production("V -> A|bA")
     grammar_4.receive_production("B -> bV")
     grammar_4.set_start("E")
-    parser_4 = Parser(grammar_4)
+    parser_4 = TopDownParser(grammar_4)
     # Check if the grammar is LL(1), in this case should be True
     print(f'The grammar\n{grammar_4}\nIs LL(1): {parser_4.is_ll1()}')
 
@@ -219,7 +219,7 @@ def test_table():
     grammar.receive_production("F->(E)|i")
     grammar.set_start("E")
     # Create a parser for the grammar
-    parser = Parser(grammar)
+    parser = TopDownParser(grammar)
     # Print the table
     # _ |     i    |      +     |      *     |      (     |      )     |      $     |
     # E | E -> TE' |            |            | E -> TE'   |            |            |
@@ -234,7 +234,7 @@ def test_table():
     grammar_2.receive_production("S -> (S)S'|()S'")
     grammar_2.receive_production("S' -> SS'|ε")
     grammar_2.set_start("S")
-    parser_2 = Parser(grammar_2)
+    parser_2 = TopDownParser(grammar_2)
     # Print the table
     # _ |        (        |      )     |      $     |
     # S | S -> (S)S'|()S' |            |            |
@@ -252,7 +252,7 @@ def test_table():
     grammar_3.receive_production("B -> ;A|ε")
     grammar_3.receive_production("C -> x|E")
     grammar_3.set_start("E")
-    parser_3 = Parser(grammar_3)
+    parser_3 = TopDownParser(grammar_3)
     parser_3.create_table()
     print(parser_3)
 
@@ -268,7 +268,7 @@ def test_parser():
     grammar.receive_production("F->(E)|i")
     grammar.set_start("E")
     # Create a parser for the grammar
-    parser = Parser(grammar)
+    parser = TopDownParser(grammar)
     # Create a table
     parser.create_table()
     # Print the parsing result of the string i+i, should be True
@@ -287,7 +287,7 @@ def test_parser():
     grammar_2.receive_production("B -> ;A|ε")
     grammar_2.receive_production("C -> x|E")
     grammar_2.set_start("E")
-    parser_2 = Parser(grammar_2)
+    parser_2 = TopDownParser(grammar_2)
     parser_2.create_table()
     # Print the parsing result of the string (x;x), should be True
     print(parser_2.parse("(x;x)"))
@@ -298,13 +298,13 @@ def test_parser():
 
 
 # Test with a menu
-def final_test(grammar: Grammar = None, parser: Parser = None):
+def final_test(grammar: Grammar = None, parser: TopDownParser = None):
     # Create a grammar for the parser
     if grammar is None:
         grammar = Grammar()
     # Create a parser for the grammar
     if parser is None:
-        parser = Parser(grammar)
+        parser = TopDownParser(grammar)
     try:
         # Print the menu
         option = menu()
@@ -418,7 +418,7 @@ def option_2(grammar: Grammar):
 
 
 # Option 4 of the menu
-def option_4(parser: Parser):
+def option_4(parser: TopDownParser):
     try:
         symbol = input('Insert the symbol or string: ')
         print(parser.first(symbol))
@@ -429,7 +429,7 @@ def option_4(parser: Parser):
 
 
 # Option 5 of the menu
-def option_5(parser: Parser):
+def option_5(parser: TopDownParser):
     try:
         symbol = input('Insert the non-terminal: ')
         if symbol not in parser.grammar.non_terminals:

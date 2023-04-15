@@ -1,12 +1,13 @@
 from collections import deque
 from grammar import Grammar
+from parser import Parser
 import re
 
 
 # Class to handle the bottom-up parser of a grammar
-class Parser:
+class BottomUpParser (Parser):
     def __init__(self, grammar: Grammar):
-        self.grammar = grammar
+        super().__init__(grammar)
         self.table = {}
         if grammar.start is None:
             self.states = []
@@ -18,113 +19,6 @@ class Parser:
             self.states = [self.closure({f'{self.grammar.start}\'': ["." + self.grammar.start]})]
             self.initialize_states()
             self.initialize_table()
-
-    # Function to calculate the first of a symbol or string
-    def first(self, symbol: str):
-        first = set()
-        if len(symbol) == 1 or symbol in self.grammar.non_terminals:
-            # Check if the symbol is in the grammar
-            if (
-                    symbol not in self.grammar.terminals
-                    and symbol not in self.grammar.non_terminals
-                    and symbol != "ε"
-            ):
-                raise SyntaxError("Symbol {} is not in the grammar".format(symbol))
-            else:
-                # If the symbol is a terminal or epsilon, then the first is set containing the symbol itself
-                if symbol in self.grammar.terminals or symbol == "ε":
-                    first.add(symbol)
-                # If the symbol is a non-terminal
-                else:
-                    # For each derivation of the symbol
-                    for derivation in self.grammar.productions[symbol]:
-                        # Check each character of the derivation
-                        first = self.check_each_character(symbol, derivation, first)
-        else:
-            # Check each character of the string, in case the symbol is a string
-            first = self.check_each_character(symbol, symbol, first)
-        return first
-
-    # Function to check each character of a derivation in the first function
-    def check_each_character(self, symbol: str, string: str, first: set) -> set:
-        pattern = re.compile(r"[A-Z]\'+")
-        element = 0
-        while element < len(string):
-            # Check if the current character is a non-terminal with a prime (A'),
-            # in this case, we need to check the first of the non-terminal with the prime (A')
-            # and add 1 to the element to check the next character's first of the string
-            if element <= len(string) - 2 and pattern.match(string[element] + string[element + 1]):
-                if string[element] + string[element + 1] == symbol:
-                    return first
-                first_of_element = self.first(string[element] + string[element + 1])
-                element += 1
-            else:
-                if string[element] == symbol:
-                    return first
-                first_of_element = self.first(string[element])
-
-            if "ε" in first_of_element:
-                # Adds the first of the current character to the first of the symbol except epsilon
-                first_of_element.remove("ε")
-                first = first.union(first_of_element)
-                # If the current character is the last one, then add epsilon to the first of the symbol
-                # This is because the first of all symbols in string contains epsilon
-                if element == len(string) - 1:
-                    first.add("ε")
-            else:
-                # If the current character does not contain epsilon, then add the first of the current character to
-                # the first of the symbol
-                first = first.union(first_of_element)
-                break
-            element += 1
-        return first
-
-    # Function to calculate the follow of a symbol
-    def follow(self, symbol):
-        follow = set()
-        # If the symbol is the start symbol, then add $ to the follow set
-        if symbol == self.grammar.start:
-            follow.add("$")
-        # We must check every derivation of every non-terminal
-        for non_terminal, derivations in self.grammar.productions.items():
-            # For each derivation of the non-terminal
-            for derivation in derivations:
-                # Check if the symbol is in the derivation, and it does not have a prime (A')
-                # if it has a prime, then it is not the same symbol, for example, A' != A and A'' != A'
-                pattern = symbol + r"(?!\')"
-                for _ in re.finditer(pattern, derivation):
-                    # Get the index of the symbol in the derivation
-                    index = derivation.index(symbol) + len(symbol) - 1
-                    # If the symbol is not the last character of the derivation
-                    if index != len(derivation) - 1:
-                        # First of β
-                        first = self.first(derivation[index + 1:])
-                        # Rule 2, A -> αBβ; all in first(β) are in follow(B) except epsilon
-                        follow = self.join_first_follow(first, follow)
-                        # Rule 3, A -> αBβ, ε ∈ first(β); all in follow(A) are in follow(B) except epsilon
-                        if "ε" in first and non_terminal != symbol:
-                            follow = self.join_first_follow(self.follow(non_terminal), follow)
-                    else:
-                        # Rule 3, A -> αB; all in follow(A) are in follow(B) except epsilon
-                        if non_terminal != symbol:
-                            follow = self.join_first_follow(self.follow(non_terminal), follow)
-                    derivation = derivation[:derivation.index(symbol)] + derivation[index + 1:]
-
-        return follow
-
-    @staticmethod
-    # Method insert every element of the first set in the follow set except epsilon
-    def join_first_follow(first: set, follow: set):
-        if "ε" in first:
-            first.remove("ε")
-            # Returns the union of the first and follow sets,
-            # so the follow set will contain its elements and the first set without epsilon
-            follow = follow.union(first)
-            # Add epsilon to the first set, because the first set contains epsilon
-            first.add("ε")
-            return follow
-        else:
-            return first.union(follow)
 
     # Function to check if a state is in the states array
     def add_state(self, state: dict):

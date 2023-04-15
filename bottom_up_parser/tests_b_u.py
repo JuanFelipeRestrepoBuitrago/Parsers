@@ -1,7 +1,7 @@
 import re
 import time
 from grammar import Grammar
-from bottom_up_parser.parser import Parser
+from bottom_up_parser.bottom_up_parser import BottomUpParser
 
 
 def test_closure():
@@ -14,7 +14,7 @@ def test_closure():
     grammar.receive_production("F -> (E)")
     grammar.receive_production("F -> i")
     grammar.set_start("E")
-    parser = Parser(grammar)
+    parser = BottomUpParser(grammar)
     # Print the first state, which is the closure of the start symbol
     print(parser.states)
 
@@ -30,7 +30,7 @@ def test_goto():
     grammar.receive_production("F -> (E)")
     grammar.receive_production("F -> i")
     grammar.set_start("E")
-    parser = Parser(grammar)
+    parser = BottomUpParser(grammar)
     # Print the first state, which is the closure of the start symbol
     print(parser.states)
     # Print the goto of the first state with the symbol E
@@ -62,7 +62,7 @@ def test_states():
     grammar.receive_production("F -> (E)")
     grammar.receive_production("F -> i")
     grammar.set_start("E")
-    parser = Parser(grammar)
+    parser = BottomUpParser(grammar)
     parser.initialize_states()
     # Print the states
     for state in parser.states:
@@ -82,7 +82,7 @@ def test_action():
     grammar.receive_production("F -> (E)")
     grammar.receive_production("F -> i")
     grammar.set_start("E")
-    parser = Parser(grammar)
+    parser = BottomUpParser(grammar)
     parser.initialize_states()
     parser.initialize_table()
     # Print Action of state {E: [E.], E: [E.+T]}
@@ -102,7 +102,7 @@ def test_print_table():
     grammar.receive_production("F -> (E)")
     grammar.receive_production("F -> i")
     grammar.set_start("E")
-    parser = Parser(grammar)
+    parser = BottomUpParser(grammar)
     parser.initialize_states()
     parser.initialize_table()
     print(parser)
@@ -120,7 +120,7 @@ def test_parser():
     grammar.receive_production("F -> (E)")
     grammar.receive_production("F -> i")
     grammar.set_start("E")
-    parser = Parser(grammar)
+    parser = BottomUpParser(grammar)
     parser.initialize_states()
     parser.initialize_table()
     # Parse the string i+i, should return True
@@ -134,11 +134,11 @@ def test_parser():
 
 
 # Function with the final test
-def test_final(grammar: Grammar = None, parser: Parser = None):
+def test_final(grammar: Grammar = None, parser: BottomUpParser = None):
     if grammar is None:
         grammar = Grammar()
     if parser is None:
-        parser = Parser(grammar)
+        parser = BottomUpParser(grammar)
     # Print the menu
     try:
         option = menu()
@@ -278,7 +278,7 @@ def print_closure(state: dict):
 
 
 # Option 4 of the menu
-def option_4(grammar: Grammar, parser: Parser):
+def option_4(grammar: Grammar, parser: BottomUpParser):
     try:
         pattern = re.compile(r'\s*(?P<Symbol>[A-Z]\'*)\s?->\s?(?P<Derivations>.+)')  # Regex to check the productions
         state = dict()
@@ -309,7 +309,7 @@ def option_4(grammar: Grammar, parser: Parser):
 
 
 # Option 5 of the menu
-def option_5(grammar: Grammar, parser: Parser):
+def option_5(grammar: Grammar, parser: BottomUpParser):
     try:
         state_number = int(input(f'Insert the number of the state you want to see the goto (From 0 to '
                                  f'{len(parser.states) - 1}): '))
@@ -333,7 +333,7 @@ def option_5(grammar: Grammar, parser: Parser):
 
 
 # Option 8 of the menu
-def option_8(grammar: Grammar, parser: Parser):
+def option_8(grammar: Grammar, parser: BottomUpParser):
     try:
         string = input('Insert the string to check: ')
         for symbol in string:
