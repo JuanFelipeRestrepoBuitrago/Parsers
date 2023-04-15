@@ -29,48 +29,55 @@ class Parser:
         return False
 
     # Function to calculate the first of a symbol or string
-    def first(self, symbol: str):
+    def first(self, string: str, visited: set = None):
+        # Set of non-terminals that have been visited in the recursion
+        if visited is None:
+            visited = set()
         first = set()
-        if len(symbol) == 1 or symbol in self.grammar.non_terminals:
-            # Check if the symbol is in the grammar
-            if (
-                    symbol not in self.grammar.terminals
-                    and symbol not in self.grammar.non_terminals
-                    and symbol != "ε"
-            ):
-                raise SyntaxError("Symbol {} is not in the grammar".format(symbol))
-            else:
-                # If the symbol is a terminal or epsilon, then the first is set containing the symbol itself
-                if symbol in self.grammar.terminals or symbol == "ε":
-                    first.add(symbol)
-                # If the symbol is a non-terminal
-                else:
-                    # For each derivation of the symbol
-                    for derivation in self.grammar.productions[symbol]:
-                        # Check each character of the derivation
-                        first = self.check_each_character(symbol, derivation, first)
+        # Check if the string is a non-terminal
+        if string in self.grammar.non_terminals:
+            # Check if the non-terminal has been visited to add it to the visited set
+            if string not in visited:
+                visited.add(string)
+            # We must check the first of each derivation of the non-terminal
+            for derivation in self.grammar.productions[string]:
+                first = self.first_string(derivation, first, visited, string)
+        # Check if the string is a terminal to add it to the first set and return it directly
+        elif string in self.grammar.terminals:
+            first.add(string)
+            return first
+        # Check if the string is epsilon to add it to the first set and return it directly
+        elif string == "ε":
+            first.add("ε")
+            return first
+        # Check if the string is a string of more than one character
+        elif len(string) > 1:
+            first = self.first_string(string, first, visited)
+        # If none of the above conditions is true, then the string is not in the grammar
         else:
-            # Check each character of the string, in case the symbol is a string
-            first = self.check_each_character(symbol, symbol, first)
+            raise SyntaxError("Symbol {} is not in the grammar".format(string))
+
         return first
 
-    # Function to check each character of a derivation in the first function
-    def check_each_character(self, symbol: str, string: str, first: set) -> set:
+    # Function to calculate the first of a string
+    def first_string(self, string: str, first: set, visited: set, symbol: str = None):
+        if symbol is None:
+            symbol = ''
         pattern = re.compile(r"[A-Z]\'+")
         element = 0
         while element < len(string):
-            # Check if the current character is a non-terminal with a prime (A'),
-            # in this case, we need to check the first of the non-terminal with the prime (A')
+            # Check if the current character is a non-terminal with a single quote (A'),
+            # in this case, we need to check the first of the non-terminal with the single quote (A')
             # and add 1 to the element to check the next character's first of the string
             if element <= len(string) - 2 and pattern.match(string[element] + string[element + 1]):
-                if string[element] + string[element + 1] == symbol:
+                if string[element] + string[element + 1] == symbol or string[element] + string[element + 1] in visited:
                     return first
-                first_of_element = self.first(string[element] + string[element + 1])
+                first_of_element = self.first(string[element] + string[element + 1], visited)
                 element += 1
             else:
-                if string[element] == symbol:
+                if string[element] == symbol or string[element] in visited:
                     return first
-                first_of_element = self.first(string[element])
+                first_of_element = self.first(string[element], visited)
 
             if "ε" in first_of_element:
                 # Adds the first of the current character to the first of the symbol except epsilon
@@ -86,6 +93,7 @@ class Parser:
                 first = first.union(first_of_element)
                 break
             element += 1
+
         return first
 
     @staticmethod
@@ -112,8 +120,8 @@ class Parser:
         # We must check every derivation of every non-terminal
         for non_terminal, derivations in self.grammar.productions.items():
             for derivation in derivations:
-                # Check if the symbol is in the derivation, and it does not have a prime (A')
-                # if it has a prime, then it is not the same symbol, for example, A' != A and A'' != A'
+                # Check if the symbol is in the derivation, and it does not have a single quote (A')
+                # if it has a single quote, then it is not the same symbol, for example, A' != A and A'' != A'
                 pattern = symbol + r"(?!\')"
                 for _ in re.finditer(pattern, derivation):
                     # Get the index of the symbol in the derivation, the last index of the symbol, for example, if the
@@ -217,8 +225,6 @@ class Parser:
 
     # Function to check if the grammar is LL(1)
     def is_ll1(self):
-        # if self.check_left_recursion():
-        #     return False
         for non_terminal in self.grammar.productions.keys():
             # If the non-terminal has more than one derivation
             if len(self.grammar.productions[non_terminal]) > 1:
@@ -250,25 +256,6 @@ class Parser:
                         # Add the derivation to the list of derivations of the non-terminal again
                         self.grammar.productions[non_terminal].append(derivation)
         return True
-
-    # Function to check if the grammar has left recursion
-    def check_left_recursion(self):
-        # Loop through the keys of the productions
-        keys = list(self.grammar.productions.keys())
-        # Loop through the keys of the productions
-        for i in range(len(keys)):
-            # Loop through all the keys before the current key
-            for j in range(i):
-                # Loop through the derivations of the current key
-                for derivation in self.grammar.productions[keys[i]]:
-                    # If the j key is in the start of the derivation, then the grammar has left recursion
-                    if derivation.startswith(keys[j]):
-                        return True
-            # Check for immediate left recursion
-            for derivation in self.grammar.productions[keys[i]]:
-                if derivation.startswith(keys[i]):
-                    return True
-        return False
 
     # Function to insert a value in the parsing table
     def insert_into_table(self, row, column, value):

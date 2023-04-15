@@ -57,6 +57,17 @@ def test_first():
     print(parser_2.first("S"))
     # Print the first of the string ()S' in this case should be {(, ε}
     print(parser_2.first("S'"))
+    print()
+
+    grammar_3 = Grammar()
+    grammar_3.receive_production("S -> (S)S'|S'")
+    grammar_3.receive_production("S' -> SS'|ε")
+    grammar_3.set_start("S")
+    parser_3 = Parser(grammar_3)
+    # Print the first of the start symbol in this case should be {(, ε}
+    print(parser_3.first("S"))
+    # Print the first of the string ()S' in this case should be {(, ε}
+    print(parser_3.first("S'"))
 
 
 # Test the follow function
@@ -120,9 +131,9 @@ def test_follow():
     grammar_4.receive_production("B -> bV")
     grammar_4.set_start("E")
     parser_4 = Parser(grammar_4)
-    # Print the follow of the start symbol in this case should be {$, x} (the order is not important)
+    # Print the follow of the start symbol in this case should be {$} (the order is not important)
     print(f'Follow of E: {parser_4.follow("E")}')
-    # Print the follow of the non-terminal H in this case should be {$, x} (the order is not important)
+    # Print the follow of the non-terminal H in this case should be {$} (the order is not important)
     print(f'Follow of H: ' + str(parser_4.follow("H")))
     # Print the follow of the non-terminal G in this case should be {$, x} (the order is not important)
     print(f'Follow of G: ' + str(parser_4.follow("G")))
