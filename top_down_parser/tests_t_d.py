@@ -354,6 +354,7 @@ def final_test(grammar: Grammar = None, parser: TopDownParser = None):
                     raise NotImplementedError("The grammar hasn't been created yet")
                 if grammar.start is None:
                     raise TypeError("Start symbol not found, please insert it first")
+                parser.create_table()
                 option_7(parser)
                 time.sleep(2)
             elif option == 8:

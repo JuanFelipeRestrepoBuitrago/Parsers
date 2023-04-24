@@ -2,10 +2,11 @@ from collections import deque
 from grammar import Grammar
 from parser import Parser
 import re
+from exceptions import NotSLRException
 
 
 # Class to handle the bottom-up parser of a grammar
-class BottomUpParser (Parser):
+class BottomUpParser(Parser):
     def __init__(self, grammar: Grammar):
         super().__init__(grammar)
         self.table = {}
@@ -104,7 +105,7 @@ class BottomUpParser (Parser):
         # For each state in the states array
         for i in range(len(self.states)):
             self.table["Action"][i] = {'$': None}
-            self.table["Goto"][i] = {'$': None}
+            self.table["Goto"][i] = {}
             # For each terminal in the grammar
             for terminal in self.grammar.terminals:
                 self.table["Action"][i][terminal] = None
@@ -113,6 +114,10 @@ class BottomUpParser (Parser):
             # For each non-terminal in the grammar
             for non_terminal in self.grammar.non_terminals:
                 goto = self.goto(self.states[i], non_terminal)
+                # Verify if the cell is empty, otherwise there is a conflict
+                if non_terminal in self.table["Goto"][i] and self.table["Goto"][i][non_terminal] is not None:
+                    raise NotSLRException(f'The grammar is not SLR(1) because there is a conflict in the state'
+                                          f' {self.states.index(i)} in the $ column')
                 # If the goto is not empty
                 if goto is not None:
                     self.table["Goto"][i][non_terminal] = self.states.index(self.goto(self.states[i], non_terminal))
@@ -130,8 +135,13 @@ class BottomUpParser (Parser):
                 if dot_index == len(production) - 1:
                     # If the symbol is the start symbol
                     if symbol == self.grammar.start + "'":
-                        # Add the accept action to the action table of the state
-                        self.table["Action"][self.states.index(state)]["$"] = "accept"
+                        # Add the accept action to the action table of the state, in the $ column
+                        # just if the cell is empty, otherwise there is a conflict
+                        if self.table["Action"][self.states.index(state)]["$"] is None:
+                            self.table["Action"][self.states.index(state)]["$"] = "accept"
+                        else:
+                            raise NotSLRException(f'The grammar is not SLR(1) because there is a conflict in the state'
+                                                  f' {self.states.index(state)} in the $ column')
                     else:
                         for terminal in self.follow(symbol):
                             # If the symbol is not in the action table of the state
@@ -139,6 +149,9 @@ class BottomUpParser (Parser):
                                 # Add the symbol to the action table of the state
                                 self.table["Action"][self.states.index(state)][terminal] = \
                                     "reduce " + symbol + "->" + production[:-1]
+                            else:
+                                raise NotSLRException(f'The grammar is not SLR(1) because there is a conflict in the '
+                                                      f'state {self.states.index(state)} in the $ column')
                 else:
                     # Get the symbol after the dot
                     next_symbol = production[dot_index + 1]
@@ -149,6 +162,9 @@ class BottomUpParser (Parser):
                             # Add the symbol to the action table of the state
                             self.table["Action"][self.states.index(state)][next_symbol] = "shift " + str(
                                 self.states.index(self.goto(state, next_symbol)))
+                        else:
+                            raise NotSLRException(f'The grammar is not SLR(1) because there is a conflict in the state'
+                                                  f' {self.states.index(state)} in the $ column')
 
     # Length of cells in action table
     def cell_length(self):
