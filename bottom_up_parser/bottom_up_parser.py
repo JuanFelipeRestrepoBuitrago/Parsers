@@ -120,7 +120,7 @@ class BottomUpParser(Parser):
                                           f' {self.states.index(i)} in the $ column')
                 # If the goto is not empty
                 if goto is not None:
-                    self.table["Goto"][i][non_terminal] = self.states.index(self.goto(self.states[i], non_terminal))
+                    self.table["Goto"][i][non_terminal] = self.states.index(goto)
                 else:
                     self.table["Goto"][i][non_terminal] = None
 

@@ -1,4 +1,5 @@
 import re
+from exceptions import *
 
 
 # Class to handle the grammar
@@ -37,7 +38,8 @@ class Grammar:
         production_match = pattern.match(production)
         # If the production does not match the pattern, it is invalid
         if not production_match:
-            raise SyntaxError("Invalid production: {}, It should be of the form: A -> aB|ε".format(production))
+            raise InvalidProductionException("Invalid production: {}, It should be of the form: A -> aB|ε".format(
+                production))
         # Retrieve the symbol and the derivations from the match
         symbol = production_match.group("Symbol")
         derivations = production_match.group("Derivations")
@@ -62,7 +64,8 @@ class Grammar:
         production_match = pattern.match(production)
         # If the production does not match the pattern, it is invalid
         if not production_match:
-            raise SyntaxError("Invalid production: {}, It should be of the form: A -> aB|ε".format(production))
+            raise InvalidProductionException("Invalid production: {}, It should be of the form: A -> aB|ε".format(
+                production))
         # Retrieve the symbol and the derivations from the match
         symbol = production_match.group("Symbol")
         derivations = production_match.group("Derivations")
@@ -95,7 +98,8 @@ class Grammar:
         if re.match(r'[A-Z]\'*', non_terminal):
             self.non_terminals.add(non_terminal)
         else:
-            raise SyntaxError("Non-terminal must be an uppercase letter followed by 0 or more apostrophes")
+            raise InvalidNonTerminalException(
+                "Non-terminal must be an uppercase letter followed by 0 or more apostrophes")
 
     # Method to add a terminal to the grammar, it does not matter if it is already in the grammar
     # the set does not allow duplicates
@@ -105,12 +109,9 @@ class Grammar:
 
     # Method to set the start symbol of the grammar
     def set_start(self, start: str):
-        # We check if the start symbol is a non-terminal, if not, we add it
-        try:
-            if start not in self.non_terminals:
-                raise ValueError("Start symbol must be a non-terminal")
-        except ValueError:
-            self.add_non_terminal(start)
+        # We check if the start symbol is a non-terminal
+        if start not in self.non_terminals:
+            raise SymbolNotFoundException("Start symbol must be a non-terminal, which is in the grammar")
         # We set the start symbol
         self.start = start
 
