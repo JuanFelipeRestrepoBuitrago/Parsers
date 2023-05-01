@@ -270,7 +270,6 @@ def option_1(grammar: Grammar):
 
 # Option 2 of the menu
 def option_2(grammar: Grammar):
-
     # Insert the start symbol
     start = input('Insert the start symbol: ')
     grammar.set_start(start)

@@ -1,5 +1,6 @@
 import time
 
+from exceptions import *
 from grammar import Grammar
 from top_down_parser.top_down_parser import TopDownParser
 
@@ -322,38 +323,38 @@ def final_test(grammar: Grammar = None, parser: TopDownParser = None):
                 time.sleep(2)
             elif option == 3:
                 if len(grammar.terminals) == 0:
-                    raise NotImplementedError("The grammar hasn't been created yet")
+                    raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
-                    raise TypeError("Start symbol not found, please insert it first")
+                    raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
                 print(grammar)
                 time.sleep(5)
             elif option == 4:
                 if len(grammar.terminals) == 0:
-                    raise NotImplementedError("The grammar hasn't been created yet")
+                    raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
-                    raise TypeError("Start symbol not found, please insert it first")
+                    raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
                 option_4(parser)
                 time.sleep(2)
             elif option == 5:
                 if len(grammar.terminals) == 0:
-                    raise NotImplementedError("The grammar hasn't been created yet")
+                    raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
-                    raise TypeError("Start symbol not found, please insert it first")
+                    raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
                 option_5(parser)
                 time.sleep(2)
             elif option == 6:
                 if len(grammar.terminals) == 0:
-                    raise NotImplementedError("The grammar hasn't been created yet")
+                    raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
-                    raise TypeError("Start symbol not found, please insert it first")
+                    raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
                 parser.create_table()
                 print(parser)
                 time.sleep(5)
             elif option == 7:
                 if len(grammar.terminals) == 0:
-                    raise NotImplementedError("The grammar hasn't been created yet")
+                    raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
-                    raise TypeError("Start symbol not found, please insert it first")
+                    raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
                 parser.create_table()
                 option_7(parser)
                 time.sleep(2)
@@ -366,21 +367,22 @@ def final_test(grammar: Grammar = None, parser: TopDownParser = None):
         print('Invalid option, please choose a number between 1 and 8')
         time.sleep(2)
         final_test(grammar, parser)
-    except NotImplementedError as e:
+    except GrammarNotCreatedException as e:
         print(e)
         time.sleep(2)
         final_test(grammar, parser)
-    except TypeError as e:
+    except StartSymbolNotFoundException as e:
         print(e)
         time.sleep(2)
         final_test(grammar, parser)
-    except SyntaxError as e:
+    except SymbolNotFoundException as e:
         print(e)
         time.sleep(2)
         final_test(grammar, parser)
-    except AssertionError:
-        print("The grammar is not LL(1), please insert a new grammar")
-        time.sleep(2)
+    except NotLL1Exception as e:
+        print(e)
+        print("Please insert a new grammar")
+        time.sleep(3)
         final_test()
 
 
@@ -400,7 +402,11 @@ def option_1(grammar: Grammar):
         print('Invalid option, the number of productions must be an integer greater than 0')
         time.sleep(1)
         option_1(grammar)
-    except SyntaxError as e:
+    except InvalidProductionException as e:
+        print(e)
+        time.sleep(1.5)
+        option_1(grammar)
+    except InvalidNonTerminalException as e:
         print(e)
         time.sleep(1.5)
         option_1(grammar)
@@ -408,14 +414,9 @@ def option_1(grammar: Grammar):
 
 # Option 2 of the menu
 def option_2(grammar: Grammar):
-    try:
-        # Insert the start symbol
-        start = input('Insert the start symbol: ')
-        grammar.set_start(start)
-    except SyntaxError as e:
-        print(e)
-        time.sleep(1.5)
-        option_2(grammar)
+    # Insert the start symbol
+    start = input('Insert the start symbol: ')
+    grammar.set_start(start)
 
 
 # Option 4 of the menu
@@ -423,7 +424,7 @@ def option_4(parser: TopDownParser):
     try:
         symbol = input('Insert the symbol or string: ')
         print(parser.first(symbol))
-    except SyntaxError as e:
+    except SymbolNotFoundException as e:
         print(e)
         time.sleep(1.5)
         option_4(parser)
@@ -434,9 +435,9 @@ def option_5(parser: TopDownParser):
     try:
         symbol = input('Insert the non-terminal: ')
         if symbol not in parser.grammar.non_terminals:
-            raise SyntaxError('The symbol is not a non-terminal')
+            raise InvalidNonTerminalException('The symbol is not a non-terminal of the grammar')
         print(parser.follow(symbol))
-    except SyntaxError as e:
+    except InvalidNonTerminalException as e:
         print(e)
         time.sleep(1.5)
         option_5(parser)
@@ -448,12 +449,12 @@ def option_7(parser):
         string = input('Insert the string to check: ')
         for symbol in string:
             if symbol not in parser.grammar.terminals:
-                raise ZeroDivisionError('The string contains characters that are not in the grammar')
+                raise SymbolNotFoundException('The string contains characters that are not in the grammar')
         if parser.parse(string):
             print(f'The string {string} is accepted')
         else:
             print(f'The string {string} is not accepted')
-    except ZeroDivisionError as e:
+    except SymbolNotFoundException as e:
         print(e)
         time.sleep(1.5)
         option_7(parser)

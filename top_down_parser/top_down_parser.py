@@ -1,5 +1,5 @@
 from collections import deque
-
+from exceptions import NotLL1Exception
 from grammar import Grammar
 from parser import Parser
 import re
@@ -81,8 +81,9 @@ class TopDownParser (Parser):
 
     # Function to create the parsing table
     def create_table(self):
+        # TODO Check if the grammar is LL(1) for the operations grammar
         if not self.is_ll1():
-            raise AssertionError()
+            raise NotLL1Exception("The grammar is not LL(1)")
         # Go through every production of the grammar
         for non_terminal, derivations in self.grammar.productions.items():
             # For each derivation of the non-terminal

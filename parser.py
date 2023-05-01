@@ -1,5 +1,6 @@
 from grammar import Grammar
 import re
+from exceptions import SymbolNotFoundException
 
 
 # Parent class for all parsers
@@ -34,7 +35,7 @@ class Parser:
             first = self.first_string(string, first, visited)
         # If none of the above conditions is true, then the string is not in the grammar
         else:
-            raise SyntaxError("Symbol {} is not in the grammar".format(string))
+            raise SymbolNotFoundException("Symbol {} is not in the grammar".format(string))
 
         return first
 
