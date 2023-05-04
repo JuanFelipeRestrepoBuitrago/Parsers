@@ -164,11 +164,11 @@ def test_follow():
 def test_check_ll1():
     # Create a grammar for the parser
     grammar = Grammar()
-    grammar.receive_production("E -> TE'")
-    grammar.receive_production("E' -> +TE'|ε")
     grammar.receive_production("T->FT'")
+    grammar.receive_production("E' -> +TE'|ε")
     grammar.receive_production("T'->*FT'|ε")
     grammar.receive_production("F->(E)|i")
+    grammar.receive_production("E -> TE'")
     grammar.set_start("E")
     # Create a parser for the grammar
     parser = TopDownParser(grammar)
@@ -329,11 +329,9 @@ def final_test(grammar: Grammar = None, parser: TopDownParser = None):
                 print(grammar)
                 time.sleep(5)
             elif option == 4:
-                if len(grammar.terminals) == 0:
-                    raise GrammarNotCreatedException("The grammar hasn't been created yet")
-                if grammar.start is None:
-                    raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
-                option_4(parser)
+                print("The grammar has been deleted successfully")
+                grammar = Grammar()
+                parser = TopDownParser(grammar)
                 time.sleep(2)
             elif option == 5:
                 if len(grammar.terminals) == 0:
@@ -347,24 +345,31 @@ def final_test(grammar: Grammar = None, parser: TopDownParser = None):
                     raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
                     raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
-                parser.create_table()
-                print(parser)
-                time.sleep(5)
+                option_6(parser)
+                time.sleep(2)
             elif option == 7:
                 if len(grammar.terminals) == 0:
                     raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
                     raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
                 parser.create_table()
-                option_7(parser)
-                time.sleep(2)
+                print(parser)
+                time.sleep(5)
             elif option == 8:
+                if len(grammar.terminals) == 0:
+                    raise GrammarNotCreatedException("The grammar hasn't been created yet")
+                if grammar.start is None:
+                    raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
+                parser.create_table()
+                option_8(parser)
+                time.sleep(2)
+            elif option == 9:
                 print("Exiting...")
                 break
             option = menu()
 
     except ValueError:
-        print('Invalid option, please choose a number between 1 and 8')
+        print('Invalid option, please choose a number between 1 and 9')
         time.sleep(2)
         final_test(grammar, parser)
     except GrammarNotCreatedException as e:
@@ -419,19 +424,19 @@ def option_2(grammar: Grammar):
     grammar.set_start(start)
 
 
-# Option 4 of the menu
-def option_4(parser: TopDownParser):
+# Option 5 of the menu
+def option_5(parser: TopDownParser):
     try:
         symbol = input('Insert the symbol or string: ')
         print(parser.first(symbol))
     except SymbolNotFoundException as e:
         print(e)
         time.sleep(1.5)
-        option_4(parser)
+        option_5(parser)
 
 
-# Option 5 of the menu
-def option_5(parser: TopDownParser):
+# Option 6 of the menu
+def option_6(parser: TopDownParser):
     try:
         symbol = input('Insert the non-terminal: ')
         if symbol not in parser.grammar.non_terminals:
@@ -440,11 +445,11 @@ def option_5(parser: TopDownParser):
     except InvalidNonTerminalException as e:
         print(e)
         time.sleep(1.5)
-        option_5(parser)
+        option_6(parser)
 
 
-# Option 7 of the menu
-def option_7(parser):
+# Option 8 of the menu
+def option_8(parser):
     try:
         string = input('Insert the string to check: ')
         for symbol in string:
@@ -457,7 +462,7 @@ def option_7(parser):
     except SymbolNotFoundException as e:
         print(e)
         time.sleep(1.5)
-        option_7(parser)
+        option_8(parser)
     except RecursionError:
         print('This grammar generates an infinite recursion, please insert a new grammar')
         time.sleep(1.5)
@@ -470,12 +475,13 @@ def menu() -> int:
     print('1. Insert productions')
     print('2. Set start symbol')
     print('3. Print grammar')
-    print('4. Print first')
-    print('5. Print follow')
-    print('6. Print table')
-    print('7. Parse string')
-    print('8. Exit')
+    print('4. Delete grammar')
+    print('5. Print first')
+    print('6. Print follow')
+    print('7. Print table')
+    print('8. Parse string')
+    print('9. Exit')
     option = int(input('Choose an option: '))
-    if option < 1 or option > 8:
-        raise ValueError('Invalid option, please choose a number between 1 and 8')
+    if option < 1 or option > 9:
+        raise ValueError('Invalid option, please choose a number between 1 and 9')
     return option

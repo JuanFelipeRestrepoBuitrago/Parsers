@@ -81,7 +81,6 @@ class TopDownParser (Parser):
 
     # Function to create the parsing table
     def create_table(self):
-        # TODO Check if the grammar is LL(1) for the operations grammar
         if not self.is_ll1():
             raise NotLL1Exception("The grammar is not LL(1)")
         # Go through every production of the grammar

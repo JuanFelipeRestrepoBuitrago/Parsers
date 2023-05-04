@@ -162,12 +162,10 @@ def test_final(grammar: Grammar = None, parser: BottomUpParser = None):
                 print(grammar)
                 time.sleep(5)
             elif option == 4:
-                if len(grammar.terminals) == 0:
-                    raise GrammarNotCreatedException("The grammar hasn't been created yet")
-                if grammar.start is None:
-                    raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
-                option_4(grammar, parser)
-                time.sleep(5)
+                print("The grammar has been deleted successfully")
+                grammar = Grammar()
+                parser = BottomUpParser(grammar)
+                time.sleep(2)
             elif option == 5:
                 if len(grammar.terminals) == 0:
                     raise GrammarNotCreatedException("The grammar hasn't been created yet")
@@ -180,28 +178,35 @@ def test_final(grammar: Grammar = None, parser: BottomUpParser = None):
                     raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
                     raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
-                parser.print_states()
+                option_6(grammar, parser)
                 time.sleep(5)
             elif option == 7:
                 if len(grammar.terminals) == 0:
                     raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
                     raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
-                print(parser)
+                parser.print_states()
                 time.sleep(5)
             elif option == 8:
                 if len(grammar.terminals) == 0:
                     raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
                     raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
-                option_8(grammar, parser)
+                print(parser)
                 time.sleep(5)
             elif option == 9:
+                if len(grammar.terminals) == 0:
+                    raise GrammarNotCreatedException("The grammar hasn't been created yet")
+                if grammar.start is None:
+                    raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
+                option_9(grammar, parser)
+                time.sleep(5)
+            elif option == 10:
                 print('Exiting program...')
                 break
             option = menu()
     except ValueError:
-        print('Invalid option, please choose a number between 1 and 9')
+        print('Invalid option, please choose a number between 1 and 10')
         time.sleep(2)
         test_final(grammar, parser)
     except GrammarNotCreatedException as e:
@@ -229,16 +234,17 @@ def menu():
     print('1. Insert productions')
     print('2. Set start symbol')
     print('3. Print grammar')
-    print('4. Print closure')
-    print('5. Print goto')
-    print('6. Print states')
-    print('7. Print table')
-    print('8. Parse string')
-    print('9. Exit')
+    print('4. Delete grammar')
+    print('5. Print closure')
+    print('6. Print goto')
+    print('7. Print states')
+    print('8. Print table')
+    print('9. Parse string')
+    print('10. Exit')
     print('----------------------------------------')
     option = int(input('Choose an option: '))
-    if option < 1 or option > 9:
-        raise ValueError('Invalid option, please choose a number between 1 and 9')
+    if option < 1 or option > 10:
+        raise ValueError('Invalid option, please choose a number between 1 and 10')
     return option
 
 
@@ -282,8 +288,8 @@ def print_closure(state: dict):
             print(symbol + ' -> ' + derivation)
 
 
-# Option 4 of the menu
-def option_4(grammar: Grammar, parser: BottomUpParser):
+# Option 5 of the menu
+def option_5(grammar: Grammar, parser: BottomUpParser):
     try:
         pattern = re.compile(r'\s*(?P<Symbol>[A-Z]\'*)\s?->\s?(?P<Derivations>.+)')  # Regex to check the productions
         state = dict()
@@ -307,15 +313,15 @@ def option_4(grammar: Grammar, parser: BottomUpParser):
     except ValueError:
         print('Invalid option, the number of the production must be an integer greater than 0')
         time.sleep(1)
-        option_4(grammar, parser)
+        option_5(grammar, parser)
     except InvalidProductionException as e:
         print(e)
         time.sleep(1.5)
-        option_4(grammar, parser)
+        option_5(grammar, parser)
 
 
-# Option 5 of the menu
-def option_5(grammar: Grammar, parser: BottomUpParser):
+# Option 6 of the menu
+def option_6(grammar: Grammar, parser: BottomUpParser):
     try:
         state_number = int(input(f'Insert the number of the state you want to see the goto (From 0 to '
                                  f'{len(parser.states) - 1}): '))
@@ -332,15 +338,15 @@ def option_5(grammar: Grammar, parser: BottomUpParser):
     except ValueError:
         print('Invalid option, the number of the state must be an integer between 0 and the number of states')
         time.sleep(1)
-        option_5(grammar, parser)
+        option_6(grammar, parser)
     except SymbolNotFoundException as e:
         print(e)
         time.sleep(1.5)
-        option_5(grammar, parser)
+        option_6(grammar, parser)
 
 
-# Option 8 of the menu
-def option_8(grammar: Grammar, parser: BottomUpParser):
+# Option 9 of the menu
+def option_9(grammar: Grammar, parser: BottomUpParser):
     try:
         string = input('Insert the string to check: ')
         for symbol in string:
@@ -353,7 +359,7 @@ def option_8(grammar: Grammar, parser: BottomUpParser):
     except SymbolNotFoundException as e:
         print(e)
         time.sleep(1.5)
-        option_8(grammar, parser)
+        option_9(grammar, parser)
     except RecursionError:
         print('This grammar generates an infinite recursion, please insert a new grammar')
         time.sleep(1.5)

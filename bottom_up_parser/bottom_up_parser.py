@@ -317,5 +317,3 @@ class BottomUpParser(Parser):
                         stack.pop()
                     # We add the state to the stack
                     stack.append(self.table["Goto"][stack[-1]][action_match.group("non_terminal")])
-                    # We Print the production
-                    print(action_match.group("non_terminal") + "->" + action_match.group("production"))
