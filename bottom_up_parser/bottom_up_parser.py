@@ -12,12 +12,23 @@ class BottomUpParser(Parser):
         self.table = {}
         if grammar.start is None:
             self.states = []
+            self.new_start_symbol = None
         else:
             self.update_sets()
 
     def update_sets(self):
         if self.grammar.start is not None:
-            self.states = [self.closure({f'{self.grammar.start}\'': ["." + self.grammar.start]})]
+            self.new_start_symbol = self.grammar.start + "\'"
+            self.states = []
+            length = 0
+            # Add the start symbol plus a single quote to the grammar,
+            # if it is already in the grammar, then add another single quote
+            while length == 0:
+                if self.new_start_symbol not in self.grammar.non_terminals:
+                    self.states = [self.closure({f'{self.new_start_symbol}': ["." + self.grammar.start]})]
+                    length = 1
+                else:
+                    self.new_start_symbol += "\'"
             self.initialize_states()
             self.initialize_table()
 
@@ -57,12 +68,17 @@ class BottomUpParser(Parser):
     # Function to calculate the goto of a state
     def goto(self, state: dict, symbol: str):
         new_state = {}
+        if symbol in self.grammar.non_terminals:
+            pattern = "\." + symbol + "(?!\')"
+        else:
+            pattern = "\.[" + symbol + "]"
         # For each symbol in the state
         for non_terminal, productions in state.items():
             # For each item of the symbol
             for item in productions:
                 # Check if the item has a dot before the symbol
-                if "." + symbol in item:
+                match = re.search(pattern, item)
+                if match is not None:
                     # Get the index of the symbol in the item
                     index = item.index("." + symbol)
                     # Add the symbol to the new state
@@ -132,9 +148,9 @@ class BottomUpParser(Parser):
             for production in productions:
                 dot_index = production.index(".")
                 # Ask if the dot is in the last position of the item
-                if dot_index == len(production) - 1:
+                if dot_index == len(production) - 1 or production[dot_index + 1] == "ε":
                     # If the symbol is the start symbol
-                    if symbol == self.grammar.start + "'":
+                    if symbol == self.new_start_symbol:
                         # Add the accept action to the action table of the state, in the $ column
                         # just if the cell is empty, otherwise there is a conflict
                         if self.table["Action"][self.states.index(state)]["$"] is None:
@@ -147,8 +163,12 @@ class BottomUpParser(Parser):
                             # If the symbol is not in the action table of the state
                             if self.table["Action"][self.states.index(state)][terminal] is None:
                                 # Add the symbol to the action table of the state
-                                self.table["Action"][self.states.index(state)][terminal] = \
-                                    "reduce " + symbol + "->" + production[:-1]
+                                if not dot_index == len(production) - 1:
+                                    action = "reduce " + symbol + "->" + production[-1]
+                                else:
+                                    action = "reduce " + symbol + "->" + production[:-1]
+                                self.table["Action"][self.states.index(state)][terminal] = action
+
                             else:
                                 raise NotSLRException(f'The grammar is not SLR(1) because there is a conflict in the '
                                                       f'state {self.states.index(state)} in the $ column')
@@ -274,11 +294,14 @@ class BottomUpParser(Parser):
     def production_length(production: str):
         non_terminal_pattern = re.compile(r"([A-Z]\'*)")
         length = 0
+        # If the production is epsilon we return 0, because the length of empty string is 0
+        if production == "ε":
+            return 0
         # For each non-terminal in the production we add 1 to the length,
         # and we remove the non-terminal from the production
         for non_terminal in non_terminal_pattern.findall(production):
             length += 1
-            production = production.replace(non_terminal, "")
+            production = production.replace(non_terminal, "", 1)
         # For each terminal in the production we add 1 to the length
         for _ in production:
             length += 1

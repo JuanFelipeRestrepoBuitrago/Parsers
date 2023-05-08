@@ -2,3 +2,14 @@ Gramática N
 E -> E+T|T
 T -> T*F|F
 F -> (E)|i
+
+Gramática M
+E -> TE'
+E' -> +TE'|ε
+T -> FT'
+T' -> *FT'|ε
+F -> (E)|i
+
+Gramática P
+S -> aS'
+S' -> S+S'|S*S'|ε

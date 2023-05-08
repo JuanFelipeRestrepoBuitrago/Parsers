@@ -22,34 +22,45 @@ def test_closure():
 
 # Function to test the goto function
 def test_goto():
+    # # Create the grammar
+    # grammar = Grammar()
+    # grammar.receive_production("E -> E+T")
+    # grammar.receive_production("E -> T")
+    # grammar.receive_production("T -> T*F")
+    # grammar.receive_production("T -> F")
+    # grammar.receive_production("F -> (E)")
+    # grammar.receive_production("F -> i")
+    # grammar.set_start("E")
+    # parser = BottomUpParser(grammar)
+    # # Print the first state, which is the closure of the start symbol
+    # print(parser.states)
+    # # Print the goto of the first state with the symbol E
+    # print('GOTO of state 0 with symbol E: ', parser.goto(parser.states[0], 'E'))
+    # # Print the goto of the first state with the symbol T
+    # print('GOTO of state 0 with symbol T: ', parser.goto(parser.states[0], 'T'))
+    # # Print the goto of the first state with the symbol F
+    # print('GOTO of state 0 with symbol F: ', parser.goto(parser.states[0], 'F'))
+    # # Print the goto of the first state with the symbol i
+    # print('GOTO of state 0 with symbol i: ', parser.goto(parser.states[0], 'i'))
+    # # Print the goto of the first state with the symbol +
+    # print('GOTO of state 0 with symbol +: ', parser.goto(parser.states[0], '+'))
+    # # Print the goto of the first state with the symbol *
+    # print('GOTO of state 0 with symbol *: ', parser.goto(parser.states[0], '*'))
+    # # Print the goto of the first state with the symbol (
+    # print('GOTO of state 0 with symbol (: ', parser.goto(parser.states[0], '('))
+    # # Print the goto of the first state with the symbol )
+    # print('GOTO of state 0 with symbol ): ', parser.goto(parser.states[0], ')'))
+
     # Create the grammar
     grammar = Grammar()
-    grammar.receive_production("E -> E+T")
-    grammar.receive_production("E -> T")
-    grammar.receive_production("T -> T*F")
-    grammar.receive_production("T -> F")
-    grammar.receive_production("F -> (E)")
-    grammar.receive_production("F -> i")
-    grammar.set_start("E")
+    grammar.receive_production("S -> aS'")
+    grammar.receive_production("S' -> S+S'|S*S'|ε")
+    grammar.set_start("S")
     parser = BottomUpParser(grammar)
-    # Print the first state, which is the closure of the start symbol
-    print(parser.states)
-    # Print the goto of the first state with the symbol E
-    print('GOTO of state 0 with symbol E: ', parser.goto(parser.states[0], 'E'))
-    # Print the goto of the first state with the symbol T
-    print('GOTO of state 0 with symbol T: ', parser.goto(parser.states[0], 'T'))
-    # Print the goto of the first state with the symbol F
-    print('GOTO of state 0 with symbol F: ', parser.goto(parser.states[0], 'F'))
-    # Print the goto of the first state with the symbol i
-    print('GOTO of state 0 with symbol i: ', parser.goto(parser.states[0], 'i'))
-    # Print the goto of the first state with the symbol +
-    print('GOTO of state 0 with symbol +: ', parser.goto(parser.states[0], '+'))
-    # Print the goto of the first state with the symbol *
-    print('GOTO of state 0 with symbol *: ', parser.goto(parser.states[0], '*'))
-    # Print the goto of the first state with the symbol (
-    print('GOTO of state 0 with symbol (: ', parser.goto(parser.states[0], '('))
-    # Print the goto of the first state with the symbol )
-    print('GOTO of state 0 with symbol ): ', parser.goto(parser.states[0], ')'))
+    # Print the state 1
+    print(parser.states[1])
+    # Print the goto of the state 1 with the symbol S
+    print('GOTO of state 1 with symbol S: ', parser.goto(parser.states[1], 'S'))
 
 
 # Function to test the states initialization
@@ -62,6 +73,22 @@ def test_states():
     grammar.receive_production("T -> F")
     grammar.receive_production("F -> (E)")
     grammar.receive_production("F -> i")
+    grammar.set_start("E")
+    parser = BottomUpParser(grammar)
+    parser.initialize_states()
+    # Print the states
+    for state in parser.states:
+        print(state)
+        print('----------------------------------------')
+    print(len(parser.states))
+
+    # Create the grammar
+    grammar = Grammar()
+    grammar.receive_production("E -> TE'")
+    grammar.receive_production("E' -> +TE'|ε")
+    grammar.receive_production("T -> FT'")
+    grammar.receive_production("T' -> *FT'|ε")
+    grammar.receive_production("F -> (E)|i")
     grammar.set_start("E")
     parser = BottomUpParser(grammar)
     parser.initialize_states()
@@ -88,8 +115,21 @@ def test_action():
     parser.initialize_table()
     # Print Action of state {E: [E.], E: [E.+T]}
     index = parser.states.index({"E'": ['E.'], 'E': ['E.+T']})
-    parser.action({"E'": ['E.'], 'E': ['E.+T']})
     print('ACTION of state {E: [E.], E: [E.+T]} with symbol : ', parser.table["Action"][index])
+
+    # Create the grammar
+    grammar = Grammar()
+    grammar.receive_production("S -> aS'")
+    grammar.receive_production("S' -> S+S'|S*S'|ε")
+    grammar.set_start("S")
+    parser = BottomUpParser(grammar)
+    # Print Action of state {S'': [S.]}
+    index = parser.states.index({"S''": ['S.']})
+    print('ACTION of state {S\'\': [S.]} with symbol : ', parser.table["Action"][index])
+    # Print Action of state {S': [S+.S', .S+S', .S*S', .ε], S: [.aS']}
+    index = parser.states.index({"S'": ['S+.S\'', '.S+S\'', '.S*S\'', '.ε'], 'S': ['.aS\'']})
+    print('ACTION of state {S\': [S+.S\', .S+S\', .S*S\', .ε], S: [.aS\']} with symbol : ',
+          parser.table["Action"][index])
 
 
 # Function to test the print_table function
