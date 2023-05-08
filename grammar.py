@@ -16,8 +16,9 @@ class Grammar:
         # If the symbol is not in the productions, it is new, so we add it
         if symbol not in self.productions:
             self.productions[symbol] = []
-        # We add the derivation to the symbol
-        self.productions[symbol].append(derivation)
+        # We add the derivation to the symbol, if it is not already in the productions
+        if derivation not in self.productions[symbol]:
+            self.productions[symbol].append(derivation)
 
     # Method to delete a production from the grammar
     def delete_production(self, symbol: str, derivation: str):
