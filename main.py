@@ -23,5 +23,5 @@ def bottom_up_parser():
 
 
 if __name__ == "__main__":
-    # top_down_parser()
-    bottom_up_parser()
+    top_down_parser()
+    # bottom_up_parser()

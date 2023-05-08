@@ -1,7 +1,8 @@
 import time
+import os
 
 from exceptions import *
-from grammar import Grammar
+from grammar import Grammar, read_strings
 from top_down_parser.top_down_parser import TopDownParser
 
 
@@ -389,6 +390,11 @@ def final_test(grammar: Grammar = None, parser: TopDownParser = None):
         print("Please insert a new grammar")
         time.sleep(3)
         final_test()
+    except FileNotFoundError as e:
+        print("File not found, try again later")
+        print(f'The file must be in "{os.path.join(os.path.dirname(__file__), "strings")}"')
+        time.sleep(5)
+        final_test(grammar, parser)
 
 
 # Option 1 of the menu
@@ -451,14 +457,22 @@ def option_6(parser: TopDownParser):
 # Option 8 of the menu
 def option_8(parser):
     try:
-        string = input('Insert the string to check: ')
-        for symbol in string:
-            if symbol not in parser.grammar.terminals:
-                raise SymbolNotFoundException('The string contains characters that are not in the grammar')
-        if parser.parse(string):
-            print(f'The string {string} is accepted')
+        action = input('Insert f to parse strings from a file or s to parse a string from console: ')
+        if action == 'f':
+            file_name = input('Insert the name of the file: ')
+            strings = read_strings(os.path.join(os.path.dirname(__file__), "strings", file_name))
+            for string in strings:
+                check_parse_string(string, parser)
+        elif action == 's':
+            string = input('Insert the string to check: ')
+            check_parse_string(string, parser)
         else:
-            print(f'The string {string} is not accepted')
+            raise ValueError('Invalid option, please insert f or s')
+
+    except ValueError as e:
+        print(e)
+        time.sleep(1.5)
+        option_8(parser)
     except SymbolNotFoundException as e:
         print(e)
         time.sleep(1.5)
@@ -467,6 +481,18 @@ def option_8(parser):
         print('This grammar generates an infinite recursion, please insert a new grammar')
         time.sleep(1.5)
         final_test()
+
+
+# Function to parse strings
+def check_parse_string(string: str, parser: TopDownParser):
+    for symbol in string:
+        if symbol not in parser.grammar.terminals:
+            raise SymbolNotFoundException('The string contains characters that are not in the grammar')
+    if parser.parse(string):
+        print(f'The string {string} is accepted')
+    else:
+        print(f'The string {string} is not accepted')
+    time.sleep(1)
 
 
 # Menu function

@@ -429,3 +429,4 @@ def check_parse_string(string: str, parser: BottomUpParser):
         print(f'The string {string} is accepted')
     else:
         print(f'The string {string} is not accepted')
+    time.sleep(1)
