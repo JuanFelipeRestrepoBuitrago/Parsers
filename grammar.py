@@ -129,3 +129,12 @@ class Grammar:
             grammar_str = grammar_str[:-1] + "\n"
         grammar_str += "Start symbol: " + self.start
         return grammar_str
+
+
+# Function to read strings from a file and return them as a list
+def read_strings(path: str):
+    strings = []
+    with open(path, "r") as file:
+        for line in file:
+            strings.append(line.strip())
+    return strings
