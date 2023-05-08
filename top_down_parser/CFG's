@@ -20,12 +20,14 @@ T -> FT'
 T' -> *FT'|ε
 F -> (E)|i
 
-Gramática Evelyn
+Gramáticas Evelyn
+A
 E -> (A)
 A -> CB
 B -> ;A|ε
 C -> x|E
 -------------------------
+B
 E -> yGH
 H -> xH|ε
 G -> A|B
@@ -33,5 +35,5 @@ A -> ε
 V -> A|bA
 B -> bV
 
-Clase
+Clase C
 S -> aSb|c|d

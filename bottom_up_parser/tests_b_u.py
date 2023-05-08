@@ -1,6 +1,7 @@
 import re
+import os
 import time
-from grammar import Grammar
+from grammar import Grammar, read_strings
 from bottom_up_parser.bottom_up_parser import BottomUpParser
 from exceptions import *
 
@@ -22,34 +23,34 @@ def test_closure():
 
 # Function to test the goto function
 def test_goto():
-    # # Create the grammar
-    # grammar = Grammar()
-    # grammar.receive_production("E -> E+T")
-    # grammar.receive_production("E -> T")
-    # grammar.receive_production("T -> T*F")
-    # grammar.receive_production("T -> F")
-    # grammar.receive_production("F -> (E)")
-    # grammar.receive_production("F -> i")
-    # grammar.set_start("E")
-    # parser = BottomUpParser(grammar)
-    # # Print the first state, which is the closure of the start symbol
-    # print(parser.states)
-    # # Print the goto of the first state with the symbol E
-    # print('GOTO of state 0 with symbol E: ', parser.goto(parser.states[0], 'E'))
-    # # Print the goto of the first state with the symbol T
-    # print('GOTO of state 0 with symbol T: ', parser.goto(parser.states[0], 'T'))
-    # # Print the goto of the first state with the symbol F
-    # print('GOTO of state 0 with symbol F: ', parser.goto(parser.states[0], 'F'))
-    # # Print the goto of the first state with the symbol i
-    # print('GOTO of state 0 with symbol i: ', parser.goto(parser.states[0], 'i'))
-    # # Print the goto of the first state with the symbol +
-    # print('GOTO of state 0 with symbol +: ', parser.goto(parser.states[0], '+'))
-    # # Print the goto of the first state with the symbol *
-    # print('GOTO of state 0 with symbol *: ', parser.goto(parser.states[0], '*'))
-    # # Print the goto of the first state with the symbol (
-    # print('GOTO of state 0 with symbol (: ', parser.goto(parser.states[0], '('))
-    # # Print the goto of the first state with the symbol )
-    # print('GOTO of state 0 with symbol ): ', parser.goto(parser.states[0], ')'))
+    # Create the grammar
+    grammar = Grammar()
+    grammar.receive_production("E -> E+T")
+    grammar.receive_production("E -> T")
+    grammar.receive_production("T -> T*F")
+    grammar.receive_production("T -> F")
+    grammar.receive_production("F -> (E)")
+    grammar.receive_production("F -> i")
+    grammar.set_start("E")
+    parser = BottomUpParser(grammar)
+    # Print the first state, which is the closure of the start symbol
+    print(parser.states)
+    # Print the goto of the first state with the symbol E
+    print('GOTO of state 0 with symbol E: ', parser.goto(parser.states[0], 'E'))
+    # Print the goto of the first state with the symbol T
+    print('GOTO of state 0 with symbol T: ', parser.goto(parser.states[0], 'T'))
+    # Print the goto of the first state with the symbol F
+    print('GOTO of state 0 with symbol F: ', parser.goto(parser.states[0], 'F'))
+    # Print the goto of the first state with the symbol i
+    print('GOTO of state 0 with symbol i: ', parser.goto(parser.states[0], 'i'))
+    # Print the goto of the first state with the symbol +
+    print('GOTO of state 0 with symbol +: ', parser.goto(parser.states[0], '+'))
+    # Print the goto of the first state with the symbol *
+    print('GOTO of state 0 with symbol *: ', parser.goto(parser.states[0], '*'))
+    # Print the goto of the first state with the symbol (
+    print('GOTO of state 0 with symbol (: ', parser.goto(parser.states[0], '('))
+    # Print the goto of the first state with the symbol )
+    print('GOTO of state 0 with symbol ): ', parser.goto(parser.states[0], ')'))
 
     # Create the grammar
     grammar = Grammar()
@@ -266,6 +267,11 @@ def test_final(grammar: Grammar = None, parser: BottomUpParser = None):
         print('Please insert a new grammar')
         time.sleep(3)
         test_final()
+    except FileNotFoundError as e:
+        print("File not found, try again later")
+        print(f'The file must be in "{os.path.join(os.path.dirname(__file__), "strings")}"')
+        time.sleep(5)
+        test_final(grammar, parser)
 
 
 # Menu function
@@ -388,14 +394,22 @@ def option_6(grammar: Grammar, parser: BottomUpParser):
 # Option 9 of the menu
 def option_9(grammar: Grammar, parser: BottomUpParser):
     try:
-        string = input('Insert the string to check: ')
-        for symbol in string:
-            if symbol not in parser.grammar.terminals:
-                raise SymbolNotFoundException('The string contains characters that are not in the grammar')
-        if parser.parse(string):
-            print(f'The string {string} is accepted')
+        action = input('Insert f to parse strings from a file or s to parse a string from console: ')
+        if action == 'f':
+            file_name = input('Insert the name of the file: ')
+            strings = read_strings(os.path.join(os.path.dirname(__file__), "strings", file_name))
+            for string in strings:
+                check_parse_string(string, parser)
+        elif action == 's':
+            string = input('Insert the string to check: ')
+            check_parse_string(string, parser)
         else:
-            print(f'The string {string} is not accepted')
+            raise ValueError('Invalid option, please insert f or s')
+
+    except ValueError as e:
+        print(e)
+        time.sleep(1.5)
+        option_9(grammar, parser)
     except SymbolNotFoundException as e:
         print(e)
         time.sleep(1.5)
@@ -404,3 +418,15 @@ def option_9(grammar: Grammar, parser: BottomUpParser):
         print('This grammar generates an infinite recursion, please insert a new grammar')
         time.sleep(1.5)
         test_final()
+
+
+# Function to parse strings
+def check_parse_string(string: str, parser: BottomUpParser):
+    for symbol in string:
+        if symbol not in parser.grammar.terminals:
+            raise SymbolNotFoundException('The string contains characters that are not in the grammar')
+    if parser.parse(string):
+        print(f'The string {string} is accepted')
+    else:
+        print(f'The string {string} is not accepted')
+    time.sleep(1)
