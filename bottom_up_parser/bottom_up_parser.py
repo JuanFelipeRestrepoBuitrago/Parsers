@@ -2,7 +2,7 @@ from collections import deque
 from grammar import Grammar
 from parser import Parser
 import re
-from exceptions import NotSLRException
+from exceptions import NotLR0Exception
 
 
 # Class to handle the bottom-up parser of a grammar
@@ -132,7 +132,7 @@ class BottomUpParser(Parser):
                 goto = self.goto(self.states[i], non_terminal)
                 # Verify if the cell is empty, otherwise there is a conflict
                 if non_terminal in self.table["Goto"][i] and self.table["Goto"][i][non_terminal] is not None:
-                    raise NotSLRException(f'The grammar is not SLR(1) because there is a conflict in the state'
+                    raise NotLR0Exception(f'The grammar is not LR(0) because there is a conflict in the state'
                                           f' {self.states.index(i)} in the $ column')
                 # If the goto is not empty
                 if goto is not None:
@@ -156,7 +156,7 @@ class BottomUpParser(Parser):
                         if self.table["Action"][self.states.index(state)]["$"] is None:
                             self.table["Action"][self.states.index(state)]["$"] = "accept"
                         else:
-                            raise NotSLRException(f'The grammar is not SLR(1) because there is a conflict in the state'
+                            raise NotLR0Exception(f'The grammar is not LR(0) because there is a conflict in the state'
                                                   f' {self.states.index(state)} in the $ column')
                     else:
                         for terminal in self.follow(symbol):
@@ -170,7 +170,7 @@ class BottomUpParser(Parser):
                                 self.table["Action"][self.states.index(state)][terminal] = action
 
                             else:
-                                raise NotSLRException(f'The grammar is not SLR(1) because there is a conflict in the '
+                                raise NotLR0Exception(f'The grammar is not LR(0) because there is a conflict in the '
                                                       f'state {self.states.index(state)} in the $ column')
                 else:
                     # Get the symbol after the dot
@@ -183,7 +183,7 @@ class BottomUpParser(Parser):
                             self.table["Action"][self.states.index(state)][next_symbol] = "shift " + str(
                                 self.states.index(self.goto(state, next_symbol)))
                         else:
-                            raise NotSLRException(f'The grammar is not SLR(1) because there is a conflict in the state'
+                            raise NotLR0Exception(f'The grammar is not LR(0) because there is a conflict in the state'
                                                   f' {self.states.index(state)} in the $ column')
 
     # Length of cells in action table

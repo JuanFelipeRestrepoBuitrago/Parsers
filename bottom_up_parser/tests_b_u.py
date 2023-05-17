@@ -262,7 +262,7 @@ def test_final(grammar: Grammar = None, parser: BottomUpParser = None):
         print(e)
         time.sleep(2)
         test_final(grammar, parser)
-    except NotSLRException as e:
+    except NotLR0Exception as e:
         print(e)
         print('Please insert a new grammar')
         time.sleep(3)

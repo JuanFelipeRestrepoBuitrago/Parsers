@@ -20,8 +20,7 @@ T -> FT'
 T' -> *FT'|ε
 F -> (E)|i
 
-Gramáticas Evelyn
-A
+Gramáticas Evelyn A
 E -> (A)
 A -> CB
 B -> ;A|ε
@@ -36,4 +35,16 @@ V -> A|bA
 B -> bV
 
 Clase C
-S -> aSb|c|d
+S -> aSb|c|d|ε
+
+Gramática D
+Q -> aAQ|b
+A -> a|bQA
+
+Gramática E (Kevin)
+S -> VS|ε
+V -> Di
+D -> T|ε
+T -> UT'
+T' -> -UT'|ε
+U -> n|b|(T)

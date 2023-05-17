@@ -1,5 +1,5 @@
 # Exception raised when the grammar is not SLR, used in bottom-up parser
-class NotSLRException(Exception):
+class NotLR0Exception(Exception):
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
