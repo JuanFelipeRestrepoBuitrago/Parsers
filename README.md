@@ -5,6 +5,9 @@ Integrantes:
 - Evelyn Alejandra Zapata
 
 Descripción: 
+El proyecto consiste en la implementación de dos analizadores sintácticos, con el objetivo de determinar la validez de una cadena de texto, asegurándose de que pertenezca a la gramática indicada.
+Uno de los analizadores el es top-down, que trabaja en un método orientado a objetivos, lo que significa que busca a partir del símbolo de inicio de la sintaxis y busca una derivación sintáctica adecuada; para ello calcula los conjuntos first y follow de la gramática dada, y con ello construye la tabla de análisis sintáctico predictivo.
+El otro analizador es el bottom-up, que parte de los símbolos terminales de entrada y aplica reglas de reducción hasta llegar al símbolo inicial de la gramática; para lo cual calcula los conjuntos closure y las funciones GoTo y Action de la gramática dada, y construye la tabla de análisis LR.
 
 Lenguaje de Programación: Python
 
