@@ -13,3 +13,16 @@ F -> (E)|i
 Gramática P
 S -> aS'
 S' -> S+S'|S*S'|ε
+
+Gramática Q
+E->TG
+ G->+TG|ε
+ T->FL
+ L->*FL|ε
+F->(E)|i
+
+Gramática R
+S -> aAb|aB
+A -> c
+B -> cD
+D -> d

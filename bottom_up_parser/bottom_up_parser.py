@@ -177,14 +177,9 @@ class BottomUpParser(Parser):
                     next_symbol = production[dot_index + 1]
                     # If the symbol is a terminal
                     if next_symbol in self.grammar.terminals:
-                        # If the symbol is not in the action table of the state
-                        if self.table["Action"][self.states.index(state)][next_symbol] is None:
-                            # Add the symbol to the action table of the state
-                            self.table["Action"][self.states.index(state)][next_symbol] = "shift " + str(
-                                self.states.index(self.goto(state, next_symbol)))
-                        else:
-                            raise NotLR0Exception(f'The grammar is not LR(0) because there is a conflict in the state'
-                                                  f' {self.states.index(state)} in the $ column')
+                        # Add the symbol to the action table of the state
+                        self.table["Action"][self.states.index(state)][next_symbol] = "shift " + str(
+                            self.states.index(self.goto(state, next_symbol)))
 
     # Length of cells in action table
     def cell_length(self):
