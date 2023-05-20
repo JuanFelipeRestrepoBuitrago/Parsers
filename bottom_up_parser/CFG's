@@ -26,3 +26,9 @@ S -> aAb|aB
 A -> c
 B -> cD
 D -> d
+
+Gramática S
+S -> aA|aB
+A -> c
+B -> cD
+D -> d

@@ -43,32 +43,24 @@ class TopDownParser (Parser):
             if len(self.grammar.productions[non_terminal]) > 1:
                 # Check the intersection of the first of every derivation
                 for derivation in self.grammar.productions[non_terminal]:
-                    # Remove the derivation from the list of derivations of the non-terminal temporarily
-                    self.grammar.productions[non_terminal].remove(derivation)
+                    # Creta a copy of the list of derivations of the non-terminal
+                    copy = list(self.grammar.productions[non_terminal]).copy()
+                    copy.remove(derivation)
+
+                    # self.grammar.productions[non_terminal].remove(derivation)
                     # If the first of the derivation contains a terminal that is also in the first of the others
                     if len(self.join_firsts(
-                            self.grammar.productions[non_terminal]).intersection(self.first(derivation))) > 0:
-                        # Add the derivation to the list of derivations of the non-terminal again
-                        self.grammar.productions[non_terminal].append(derivation)
-                        return False
-                    # Add the derivation to the list of derivations of the non-terminal again
-                    self.grammar.productions[non_terminal].append(derivation)
+                            copy).intersection(self.first(derivation))) > 0:
+                        return False, non_terminal, self.grammar.productions[non_terminal]
 
-                # Check if a derivation contains epsilon
-                for derivation in self.grammar.productions[non_terminal]:
+                    # If the first of the derivation contains epsilon
                     if self.first(derivation).__contains__("ε"):
-                        # Remove the derivation from the list of derivations of the non-terminal temporarily
-                        self.grammar.productions[non_terminal].remove(derivation)
                         # If the follow of the non-terminal contains a terminal that is also in the first of the
-                        # derivation, then the grammar is not LL(1)
-                        if len(self.follow(non_terminal).intersection(self.join_firsts(
-                                self.grammar.productions[non_terminal]))) > 0:
-                            # Add the derivation to the list of derivations of the non-terminal again
-                            self.grammar.productions[non_terminal].append(derivation)
-                            return False
-                        # Add the derivation to the list of derivations of the non-terminal again
-                        self.grammar.productions[non_terminal].append(derivation)
-        return True
+                        # rest of derivations, then the grammar is not LL(1)
+                        if len(self.follow(non_terminal).intersection(self.join_firsts(copy))) > 0:
+                            return False, non_terminal, self.grammar.productions[non_terminal]
+
+        return True, None, None
 
     # Function to insert a value in the parsing table
     def insert_into_table(self, row, column, value):
@@ -81,8 +73,12 @@ class TopDownParser (Parser):
 
     # Function to create the parsing table
     def create_table(self):
-        if not self.is_ll1():
-            raise NotLL1Exception("The grammar is not LL(1)")
+        # Is the grammar LL(1)?
+        is_ll1, non_terminal, derivations = self.is_ll1()
+
+        if not is_ll1:
+            production = non_terminal + " -> " + ("|".join(derivations))
+            raise NotLL1Exception("The grammar is not LL(1) because of the production: " + production)
         # Go through every production of the grammar
         for non_terminal, derivations in self.grammar.productions.items():
             # For each derivation of the non-terminal

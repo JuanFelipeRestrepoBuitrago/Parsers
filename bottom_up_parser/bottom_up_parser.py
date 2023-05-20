@@ -133,7 +133,7 @@ class BottomUpParser(Parser):
                 # Verify if the cell is empty, otherwise there is a conflict
                 if non_terminal in self.table["Goto"][i] and self.table["Goto"][i][non_terminal] is not None:
                     raise NotLR0Exception(f'The grammar is not LR(0) because there is a conflict in the state'
-                                          f' {self.states.index(i)} in the $ column')
+                                          f' {self.states.index(i)} in the {non_terminal} column')
                 # If the goto is not empty
                 if goto is not None:
                     self.table["Goto"][i][non_terminal] = self.states.index(goto)
@@ -157,7 +157,7 @@ class BottomUpParser(Parser):
                             self.table["Action"][self.states.index(state)]["$"] = "accept"
                         else:
                             raise NotLR0Exception(f'The grammar is not LR(0) because there is a conflict in the state'
-                                                  f' {self.states.index(state)} in the $ column')
+                                                  f' {self.states.index(state)}:{state} in the $ column')
                     else:
                         for terminal in self.follow(symbol):
                             # If the symbol is not in the action table of the state
@@ -170,16 +170,21 @@ class BottomUpParser(Parser):
                                 self.table["Action"][self.states.index(state)][terminal] = action
 
                             else:
-                                raise NotLR0Exception(f'The grammar is not LR(0) because there is a conflict in the '
-                                                      f'state {self.states.index(state)} in the $ column')
+                                raise NotLR0Exception(f'The grammar is not LR(0) because there is a conflict in the state '
+                                                      f'{self.states.index(state)}:{state} in the {terminal} column')
                 else:
                     # Get the symbol after the dot
                     next_symbol = production[dot_index + 1]
                     # If the symbol is a terminal
                     if next_symbol in self.grammar.terminals:
-                        # Add the symbol to the action table of the state
-                        self.table["Action"][self.states.index(state)][next_symbol] = "shift " + str(
-                            self.states.index(self.goto(state, next_symbol)))
+                        action = "shift " + str(self.states.index(self.goto(state, next_symbol)))
+                        # If the symbol is not in the action table of the state
+                        if self.table["Action"][self.states.index(state)][next_symbol] is None:
+                            # Add the symbol to the action table of the state
+                            self.table["Action"][self.states.index(state)][next_symbol] = action
+                        elif self.table["Action"][self.states.index(state)][next_symbol] != action:
+                            raise NotLR0Exception(f'The grammar is not LR(0) because there is a conflict in the state'
+                                                  f' {self.states.index(state)}:{state} in the {next_symbol} column')
 
     # Length of cells in action table
     def cell_length(self):
