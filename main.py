@@ -23,5 +23,22 @@ def bottom_up_parser():
 
 
 if __name__ == "__main__":
-    top_down_parser()
-    # bottom_up_parser()
+    while True:
+        print("Main Menu")
+        print("1. Access to Top-Down")
+        print("2. Access to Bottom-Up")
+        print("0. Exit")
+
+        option = input("Choose an option: ")
+        print()
+
+        if option == "1":
+            top_down_parser()
+        elif option == "2":
+            bottom_up_parser()
+        elif option == "0":
+            print("Exiting...")
+            break
+        else:
+            print("Invalid option, try again")
+        print()
