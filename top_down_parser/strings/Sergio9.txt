@@ -1,0 +1,14 @@
+(cc)
+aacbb
+a(cc)b
+(acbc)
+(cacb)
+(c(cc))
+aaacbbb
+((cc)c)
+(acbacb)
+aa(cc)bb
+a(cacb)b
+a(acbc)b
+(caacbb)
+(aacbbc)

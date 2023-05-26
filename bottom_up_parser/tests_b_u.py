@@ -196,7 +196,7 @@ def test_final(grammar: Grammar = None, parser: BottomUpParser = None):
                 print("Start symbol inserted successfully")
                 time.sleep(2)
             elif option == 3:
-                if len(grammar.terminals) == 0:
+                if len(grammar.non_terminals) == 0:
                     raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
                     raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
@@ -208,35 +208,35 @@ def test_final(grammar: Grammar = None, parser: BottomUpParser = None):
                 parser = BottomUpParser(grammar)
                 time.sleep(2)
             elif option == 5:
-                if len(grammar.terminals) == 0:
+                if len(grammar.non_terminals) == 0:
                     raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
                     raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
                 option_5(grammar, parser)
                 time.sleep(5)
             elif option == 6:
-                if len(grammar.terminals) == 0:
+                if len(grammar.non_terminals) == 0:
                     raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
                     raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
                 option_6(grammar, parser)
                 time.sleep(5)
             elif option == 7:
-                if len(grammar.terminals) == 0:
+                if len(grammar.non_terminals) == 0:
                     raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
                     raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
                 parser.print_states()
                 time.sleep(5)
             elif option == 8:
-                if len(grammar.terminals) == 0:
+                if len(grammar.non_terminals) == 0:
                     raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
                     raise StartSymbolNotFoundException("Start symbol not found, please insert it first")
                 print(parser)
                 time.sleep(5)
             elif option == 9:
-                if len(grammar.terminals) == 0:
+                if len(grammar.non_terminals) == 0:
                     raise GrammarNotCreatedException("The grammar hasn't been created yet")
                 if grammar.start is None:
                     raise StartSymbolNotFoundException("Start symbol not found, please insert it first")

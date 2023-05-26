@@ -1,0 +1,54 @@
+1. NoLL1-NoLR1
+
+S -> ASAB|ε
+A -> bA|ε
+B -> aaaaaaaa
+
+2. LL1-LR1
+
+S -> ABdC
+A -> 0|1
+B -> 0
+C -> 1|0
+
+3. NoLL1-NoLR1
+
+S -> T+S|T
+T -> I*T|I
+I -> 0|1|2
+
+4. LL1-LR1
+
+S -> TF
+T -> IG
+F -> +S|ε
+G -> *T|ε
+I -> 0|1|2
+
+5. NoLL1-NoLR1
+
+S -> S+S|S*S|0|1|2
+
+6. NoLL1-NoLR1
+
+S -> 0T|1T|2T
+T -> +ST|*ST|ε
+
+7. NoLL1-NoLR1
+
+S -> A|0B
+A -> B|1
+B -> S
+
+8. LL1-LR1
+
+A -> Bc|dnABf
+B -> r|ε
+
+9. LL1-LR1
+
+S -> aSb|(SS)|c
+
+10. LL1-LR1
+
+S -> ε
