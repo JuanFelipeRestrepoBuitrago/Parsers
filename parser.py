@@ -169,7 +169,7 @@ class Parser:
         return False
 
     # Function to calculate the follow of a symbol
-    def follow(self, symbol):
+    def follow1(self, symbol):
         # Retrieve the follow of the symbol using the first two rules
         follow = self.follow_one_two(symbol)
         # Retrieve the subsets of the non-terminals to check the third rule
@@ -194,4 +194,32 @@ class Parser:
                     # If the principal non-terminal is not in the subset of the symbol, then we must add the follow
                     # of the principal non-terminal to the follow of the symbol, with recursion
                     follow = follow.union(self.follow(principal))
+        return follow
+
+    # Function to calculate the follow of a symbol
+    def follow(self, symbol, visited: set = None):
+        # Initialize the visited set if it is None
+        if visited is None:
+            visited = set()
+
+        # Add the symbol to the visited set
+        visited.add(symbol)
+
+        # Retrieve the follow of the symbol using the first two rules
+        follow = self.follow_one_two(symbol)
+
+        # Retrieve the subsets of the non-terminals to check the third rule, and loop through them
+        for principal, sub in self.follow_third().items():
+            # If the symbol is in the subset, then we must add the follow of the principal non-terminal
+            if symbol in sub:
+                # If the principal non-terminal is not in the visited set, then we must add the follow of the
+                # principal non-terminal to the follow of the symbol, with recursion
+                if principal not in visited:
+                    follow = follow.union(self.follow(principal, visited))
+                else:
+                    # If the principal non-terminal is in the visited set, then we must add the follow of the
+                    # principal non-terminal to the follow of the symbol, without recursion to avoid infinite loops
+                    follow = follow.union(self.follow_one_two(principal))
+
+        # Return the follow of the symbol
         return follow
